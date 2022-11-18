@@ -1,0 +1,202 @@
+syntax = "proto3";
+package protos;
+option go_package = "bfkata/api";
+
+// locations are nested and could be bulk-added
+message AddLocationsReq {
+  message Loc {
+    string name = 1;
+    repeated Loc locs = 4;
+  }
+
+  repeated Loc locs = 1;
+
+  int64 parent = 2;
+}
+
+message AddLocationsResp {
+  message Loc {
+    string name = 1;
+    int64 id = 2;
+    int64 parent = 3;
+
+    repeated Loc locs = 4;
+  }
+  repeated Loc locs = 1;
+}
+
+message LocationAdded {
+  int64 id = 1;
+  string name = 2;
+  //LocType type = 3;
+
+  // added later
+  int64 parent = 4;
+}
+
+message LocationMoved {
+  int64 id = 1;
+  int64 oldParent = 2;
+  int64 newParent = 3;
+}
+
+message MoveLocationReq {
+  int64 id = 1;
+  int64 newParent = 2;
+}
+
+message MoveLocationResp {
+  // empty
+}
+
+
+message AddProductsReq {
+  repeated string skus = 1;
+}
+
+
+message AddProductsResp {
+  repeated int64 ids = 2;
+}
+
+message ProductAdded {
+  int64 id = 1;
+  string sku = 2;
+}
+
+message UpdateInventoryReq {
+  int64 location = 1;
+  int64 product = 2;
+  int64 OnHandChange = 3;
+}
+
+
+message UpdateInventoryResp {
+  int64 OnHand = 1;
+}
+
+message InventoryUpdated{
+  int64 location = 1;
+  int64 product = 2;
+  int64 OnHandChange = 3;
+  int64 OnHand = 4;
+}
+
+message ListLocationsReq {
+  int64 location = 1;
+}
+
+message ListLocationsResp {
+  message Loc {
+    string name = 1;
+    //LocType type = 2;
+    int64 id = 3;
+    int64 parent = 4;
+
+    repeated Loc chidren = 5;
+  }
+  repeated Loc locs = 1;
+
+}
+
+
+
+message GetLocInventoryReq {
+  int64 location = 1;
+}
+
+// this counts nested locations
+message GetLocInventoryResp {
+
+  message Item {
+    int64 Product = 1;
+    int64 OnHand = 2;
+    int64 Available = 3;
+  }
+
+  repeated Item items = 1;
+}
+
+message ReserveReq {
+  string reservation = 1;
+
+  message Item {
+    string sku = 1;
+    int64 quantity = 2;
+  }
+
+  repeated Item items = 2;
+  map<string,string> tags = 3;
+}
+
+
+message ReserveResp {
+  int64 reservation = 1;
+}
+
+enum Lambda{
+  UNSPECIFIED = 0;
+  RESERVE = 1;
+}
+
+message LambdaInstalled{
+  Lambda type = 1;
+  string code = 2;
+}
+
+message Reserved {
+  int64 reservation = 1;
+  string code = 2;
+
+  message Item {
+    int64 product = 1;
+    int64 quantity = 2;
+
+    int64 location = 3;
+  }
+
+  repeated Item items = 4;
+}
+
+
+service InventoryService {
+  rpc AddLocations(AddLocationsReq) returns (AddLocationsResp);
+
+  rpc AddProducts(AddProductsReq) returns (AddProductsResp);
+
+  rpc ListLocations(ListLocationsReq) returns (ListLocationsResp);
+  rpc MoveLocation(MoveLocationReq) returns (MoveLocationResp);
+  rpc UpdateInventory(UpdateInventoryReq) returns (UpdateInventoryResp);
+  rpc GetLocInventory(GetLocInventoryReq) returns (GetLocInventoryResp);
+  rpc Reserve(ReserveReq) returns (ReserveResp);
+}
+
+
+// server need to implement this interface
+// to allow remote spec testing.
+// This is for collaboration with Christian Folie
+import "google/protobuf/any.proto";
+
+message SpecRequest {
+  // a list of given events
+  repeated google.protobuf.Any given = 1;
+  // request that we are testing
+  google.protobuf.Any when = 2;
+}
+
+message SpecResponse {
+  // actual response. Must be nil on error
+  google.protobuf.Any response = 1;
+  // list of events that were produced by the aggregate
+  repeated google.protobuf.Any events = 2;
+  // status code maps to [google.rpc.Code][google.rpc.Code]
+  int32 status = 3;
+  // logical error in english
+  string error = 4;
+}
+
+
+service SpecService {
+  // Spec subject will run this request in isolation
+  rpc Spec(SpecRequest) returns (SpecResponse);
+}
