@@ -1,9 +1,6 @@
 package specs
 
 import (
-	"bufio"
-	"bytes"
-	"fmt"
 	"github.com/google/go-cmp/cmp"
 	"github.com/trustbit/bfkata/api"
 	"google.golang.org/protobuf/proto"
@@ -36,64 +33,6 @@ func TestMessageConversion(t *testing.T) {
 				t.Fatalf(deltas)
 			}
 
-		})
-	}
-
-}
-
-func TestRoundtrip(t *testing.T) {
-	for _, s := range api.Specs {
-		t.Run(s.Name, func(t *testing.T) {
-
-			f, err := SpecToParseableString(s)
-			if err != nil {
-				t.Fatalf("format: %s", err)
-			}
-
-			result, err := SpecFromParseableString(f)
-			if err != nil {
-				t.Fatalf("parse: %s", err)
-			}
-
-			if s.ToTestString() != result.ToTestString() {
-				t.Fatalf(cmp.Diff(s.ToTestString(), result.ToTestString()))
-
-			}
-
-		})
-
-	}
-}
-
-func TestFullRoundTrip(t *testing.T) {
-	var b bytes.Buffer
-	foo := bufio.NewWriter(&b)
-
-	err := WriteSpecs(api.Specs, foo)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	_ = foo.Flush()
-
-	actual, err := ReadSpecs(&b)
-	if err != nil {
-		t.Log(b.String())
-		t.Fatal(err)
-	}
-
-	if len(api.Specs) != len(actual) {
-		t.Fatalf("Length mismatch: %d, %d", len(api.Specs), len(actual))
-	}
-
-	for i, s := range api.Specs {
-
-		t.Run(fmt.Sprintf("#%d: %s", i, s.Name), func(t *testing.T) {
-
-			delta := cmp.Diff(s.ToTestString(), actual[i].ToTestString())
-			if len(delta) > 0 {
-				t.Fatal(delta)
-			}
 		})
 	}
 

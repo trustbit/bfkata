@@ -136,7 +136,7 @@ func runTest() int {
 
 		fmt.Print(ERASE, "\r")
 		if len(issues) == 0 && err == nil {
-			//fmt.Printf(" ✔\n")
+			fmt.Printf(" ✔\n")
 			oks += 1
 		} else {
 			fails += 1

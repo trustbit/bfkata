@@ -9,14 +9,6 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func errToStr(e *status.Status) string {
-	if e == nil {
-		return ""
-	}
-	return e.String()
-
-}
-
 func Compare(spec *api.Spec, resp proto.Message, actualErr *status.Status, events []proto.Message) seq.Issues {
 
 	issues := seq.Diff(spec.ThenResponse, resp, "response")
