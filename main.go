@@ -70,20 +70,24 @@ func runTest() int {
 	flags := flag.NewFlagSet("test", flag.ExitOnError)
 
 	flags.StringVar(&addr, "addr", "127.0.0.1:50051", "Subject to test")
-	flags.StringVar(&file, "file", "specs.txt", "Specs file to load")
+	flags.StringVar(&file, "file", "<bundled>", "Specs file to load")
 
 	if err := flags.Parse(os.Args[1:]); err != nil {
 		flags.Usage()
 		os.Exit(1)
 	}
+	var reader *bytes.Reader
+	if file == "<bundled>" {
+		reader = bytes.NewReader([]byte(specs.BundledSpecs))
 
-	in, err := os.ReadFile(file)
-	if err != nil {
-		log.Fatalln("Can't read file:", err)
+	} else {
+		in, err := os.ReadFile(file)
+		if err != nil {
+			log.Fatalln("Can't read file:", err)
+		}
+
+		reader = bytes.NewReader(in)
 	}
-
-	reader := bytes.NewReader(in)
-
 	actual, err := specs.ReadSpecs(reader)
 	if err != nil {
 		log.Fatalln("Can't read specs:", err)
