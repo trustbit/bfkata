@@ -326,6 +326,8 @@ var InventoryService_ServiceDesc = grpc.ServiceDesc{
 type SpecServiceClient interface {
 	// Spec subject will run this request in isolation
 	Spec(ctx context.Context, in *SpecRequest, opts ...grpc.CallOption) (*SpecResponse, error)
+	// this serves two purposes - ping and info
+	About(ctx context.Context, in *AboutRequest, opts ...grpc.CallOption) (*AboutResponse, error)
 }
 
 type specServiceClient struct {
@@ -345,12 +347,23 @@ func (c *specServiceClient) Spec(ctx context.Context, in *SpecRequest, opts ...g
 	return out, nil
 }
 
+func (c *specServiceClient) About(ctx context.Context, in *AboutRequest, opts ...grpc.CallOption) (*AboutResponse, error) {
+	out := new(AboutResponse)
+	err := c.cc.Invoke(ctx, "/protos.SpecService/About", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SpecServiceServer is the server API for SpecService service.
 // All implementations must embed UnimplementedSpecServiceServer
 // for forward compatibility
 type SpecServiceServer interface {
 	// Spec subject will run this request in isolation
 	Spec(context.Context, *SpecRequest) (*SpecResponse, error)
+	// this serves two purposes - ping and info
+	About(context.Context, *AboutRequest) (*AboutResponse, error)
 	mustEmbedUnimplementedSpecServiceServer()
 }
 
@@ -360,6 +373,9 @@ type UnimplementedSpecServiceServer struct {
 
 func (UnimplementedSpecServiceServer) Spec(context.Context, *SpecRequest) (*SpecResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Spec not implemented")
+}
+func (UnimplementedSpecServiceServer) About(context.Context, *AboutRequest) (*AboutResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method About not implemented")
 }
 func (UnimplementedSpecServiceServer) mustEmbedUnimplementedSpecServiceServer() {}
 
@@ -392,6 +408,24 @@ func _SpecService_Spec_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SpecService_About_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AboutRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SpecServiceServer).About(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/protos.SpecService/About",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SpecServiceServer).About(ctx, req.(*AboutRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SpecService_ServiceDesc is the grpc.ServiceDesc for SpecService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -402,6 +436,10 @@ var SpecService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Spec",
 			Handler:    _SpecService_Spec_Handler,
+		},
+		{
+			MethodName: "About",
+			Handler:    _SpecService_About_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

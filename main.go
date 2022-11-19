@@ -74,7 +74,7 @@ func runTest() int {
 
 	if err := flags.Parse(os.Args[1:]); err != nil {
 		flags.Usage()
-		os.Exit(1)
+		return 1
 	}
 	var reader *bytes.Reader
 	if file == "<bundled>" {
@@ -83,17 +83,19 @@ func runTest() int {
 	} else {
 		in, err := os.ReadFile(file)
 		if err != nil {
-			log.Fatalln("Can't read file:", err)
+			fmt.Println("Can't read file:", err)
+			return 1
 		}
 
 		reader = bytes.NewReader(in)
 	}
 	actual, err := specs.ReadSpecs(reader)
 	if err != nil {
-		log.Fatalln("Can't read specs:", err)
+		fmt.Println("Can't read specs:", err)
+		return 1
 	}
 
-	log.Printf("Loaded %d specs from %s", len(actual), file)
+	fmt.Printf("Loaded %d specs from %s\n", len(actual), file)
 
 	ctx := context.Background()
 
@@ -101,7 +103,8 @@ func runTest() int {
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		log.Fatalln("Can't dial address:", err)
+		fmt.Println("Can't dial address:", err)
+		return 1
 	}
 	// setup client
 	client := api.NewSpecServiceClient(conn)
@@ -110,7 +113,25 @@ func runTest() int {
 
 	oks, fails, issues := 0, 0, 0
 
-	log.Println("Connecting to ", addr)
+	fmt.Printf("Connecting to %s...\n", addr)
+
+	resp, err := client.About(ctx, &api.AboutRequest{})
+	if err != nil {
+
+		fail, _ := status.FromError(err)
+		if fail.Code() == codes.Unavailable {
+
+			fmt.Println(fail.Message())
+
+			fmt.Printf("\nTest endpoint is not found. Did you start it?\n")
+			return 1
+
+		}
+		fmt.Println(err.Error())
+		return 1
+	} else {
+		fmt.Printf("OK! Implemented by %s\n", resp.Author)
+	}
 
 	for i, s := range actual {
 

@@ -195,8 +195,16 @@ message SpecResponse {
   string error = 4;
 }
 
+message AboutRequest{ }
+message AboutResponse {
+  string author = 1;
+  string detail = 2;
+  string contact = 3;
+}
 
 service SpecService {
   // Spec subject will run this request in isolation
   rpc Spec(SpecRequest) returns (SpecResponse);
+  // this serves two purposes - ping and info
+  rpc About(AboutRequest) returns (AboutResponse);
 }
