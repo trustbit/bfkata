@@ -121,11 +121,16 @@ func ReadSpecs(r io.Reader) ([]*api.Spec, error) {
 		// hacky for now
 		joined := strings.Join(lines, "\n")
 		parsed, err := SpecFromParseableString(joined)
+
 		if err != nil {
 			return nil, fmt.Errorf("failed to parse spec from line %d: %w", line, err)
 		}
 		specs = append(specs, parsed)
 	}
+	for i, s := range specs {
+		s.Seq = i + 1
+	}
+
 	return specs, nil
 }
 
