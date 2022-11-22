@@ -17,8 +17,53 @@ import (
 	"os"
 )
 
+const BUNDLE = "<bundle>"
+
 func main() {
-	runTest()
+
+	if len(os.Args) == 1 {
+		printUsage()
+		return
+	}
+
+	switch os.Args[1] {
+	case "test":
+		runTest(os.Args[1:])
+	case "specs":
+		sp, err := loadSpecs(BUNDLE)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		fmt.Printf("// Loaded %d specs from %s\n", len(sp), BUNDLE)
+		for _, s := range sp {
+			fmt.Println(specs.BODY_SEPARATOR)
+			fmt.Printf("%s%s %s(#%d)\n", GREEN, s.Name, CLEAR, s.Seq)
+			fmt.Println(specs.NAME_SEPARATOR)
+			specs.Print(s)
+		}
+	default:
+		fmt.Printf("Unknown command %s", os.Args[1])
+		printUsage()
+		return
+
+	}
+
+}
+
+func printSpecs() {
+
+}
+
+func printUsage() {
+	fmt.Printf(`
+bfkata - test scaffolding for Black Friday kata. Commands:
+
+  test      - run test suite aginst a provided gRPC endpoint
+  specs     - print bundled test specs
+  contracts - print bundled contracts
+
+
+`, os.Args[0])
 }
 
 const (
@@ -64,34 +109,42 @@ func mustMsg(a *anypb.Any) proto.Message {
 	return p
 }
 
-func runTest() int {
-	var addr string
-	var file string
-	flags := flag.NewFlagSet("test", flag.ExitOnError)
-
-	flags.StringVar(&addr, "addr", "127.0.0.1:50051", "Subject to test")
-	flags.StringVar(&file, "file", "<bundled>", "Specs file to load")
-
-	if err := flags.Parse(os.Args[1:]); err != nil {
-		flags.Usage()
-		return 1
-	}
+func loadSpecs(file string) ([]*api.Spec, error) {
 	var reader *bytes.Reader
-	if file == "<bundled>" {
+	if file == BUNDLE {
 		reader = bytes.NewReader([]byte(specs.BundledSpecs))
 
 	} else {
 		in, err := os.ReadFile(file)
 		if err != nil {
-			fmt.Println("Can't read file:", err)
-			return 1
+			return nil, fmt.Errorf("can't read file: %w", err)
 		}
-
 		reader = bytes.NewReader(in)
 	}
 	actual, err := specs.ReadSpecs(reader)
 	if err != nil {
-		fmt.Println("Can't read specs:", err)
+		return nil, fmt.Errorf("can't parse specs:", err)
+	}
+	return actual, nil
+
+}
+
+func runTest(args []string) int {
+	var addr string
+	var file string
+	flags := flag.NewFlagSet("test", flag.ExitOnError)
+
+	flags.StringVar(&addr, "addr", "127.0.0.1:50051", "Subject to test")
+	flags.StringVar(&file, "file", BUNDLE, "Specs file to load")
+
+	if err := flags.Parse(args); err != nil {
+		flags.Usage()
+		return 1
+	}
+
+	actual, err := loadSpecs(file)
+	if err != nil {
+		fmt.Println(err.Error())
 		return 1
 	}
 

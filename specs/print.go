@@ -45,7 +45,7 @@ func PrintFull(s *api.Spec, issues seq.Issues) {
 		}
 	*/
 	if len(issues) == 0 {
-		fmt.Printf("%sNO ISSUES!%s\n", GREEN, CLEAR)
+		//fmt.Printf("%sNO ISSUES!%s\n", GREEN, CLEAR)
 
 	} else {
 
@@ -79,8 +79,7 @@ func Print(s *api.Spec) {
 		println(fmt.Sprintf("%s\n  %s", yellow("THEN RESPONSE:"), Format(s.ThenResponse)))
 	}
 	if s.ThenError != nil {
-
-		println(fmt.Sprintf("%s\n  %s", yellow("THEN ERROR:"), Format(s.ThenError)))
+		println(fmt.Sprintf("%s\n  %s", yellow("THEN ERROR:"), statusToString(s.ThenError)))
 	}
 	if len(s.ThenEvents) > 0 {
 		println(yellow("THEN EVENTS:"))

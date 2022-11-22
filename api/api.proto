@@ -161,9 +161,7 @@ message Reserved {
 
 service InventoryService {
   rpc AddLocations(AddLocationsReq) returns (AddLocationsResp);
-
   rpc AddProducts(AddProductsReq) returns (AddProductsResp);
-
   rpc ListLocations(ListLocationsReq) returns (ListLocationsResp);
   rpc MoveLocation(MoveLocationReq) returns (MoveLocationResp);
   rpc UpdateInventory(UpdateInventoryReq) returns (UpdateInventoryResp);
