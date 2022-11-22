@@ -15,6 +15,7 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 	"log"
 	"os"
+	"strings"
 )
 
 const BUNDLE = "<bundle>"
@@ -29,18 +30,13 @@ func main() {
 	switch os.Args[1] {
 	case "test":
 		runTest(os.Args[1:])
+	case "api":
+
+		printApi()
+		return
+
 	case "specs":
-		sp, err := loadSpecs(BUNDLE)
-		if err != nil {
-			log.Fatalln(err)
-		}
-		fmt.Printf("// Loaded %d specs from %s\n", len(sp), BUNDLE)
-		for _, s := range sp {
-			fmt.Println(specs.BODY_SEPARATOR)
-			fmt.Printf("%s%s %s(#%d)\n", GREEN, s.Name, CLEAR, s.Seq)
-			fmt.Println(specs.NAME_SEPARATOR)
-			specs.Print(s)
-		}
+		printSpecs()
 	default:
 		fmt.Printf("Unknown command %s", os.Args[1])
 		printUsage()
@@ -50,18 +46,44 @@ func main() {
 
 }
 
-func printSpecs() {
+func printApi() {
+	// poor man's keyword highlight
+	keywords := []string{"message",
+		"service", "returns", "rpc", "string", "repeated", "int32", "enum", "int64", "map<string,string>", "google.protobuf.Any"}
+	txt := api.BundledAPI
+	for _, kw := range keywords {
+		txt = strings.Replace(txt, kw+" ", GREEN+kw+CLEAR+" ", -1)
 
+	}
+
+	fmt.Println(txt)
+}
+
+func printSpecs() int {
+	sp, err := loadSpecs(BUNDLE)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Printf("// Loaded %d specs from %s\n", len(sp), BUNDLE)
+	for _, s := range sp {
+		fmt.Println(specs.BODY_SEPARATOR)
+		fmt.Printf("%s%s %s(#%d)\n", GREEN, s.Name, CLEAR, s.Seq)
+		fmt.Println(specs.NAME_SEPARATOR)
+		specs.Print(s)
+
+	}
+
+	return 0
 }
 
 func printUsage() {
 	fmt.Printf(`
 bfkata - test scaffolding for Black Friday kata. Commands:
 
-  test      - run test suite aginst a provided gRPC endpoint
-  specs     - print bundled test specs
-  contracts - print bundled contracts
 
+  api       - print bundled contracts
+  specs     - print bundled test specs
+  test      - run test suite aginst a provided gRPC endpoint
 
 `, os.Args[0])
 }
