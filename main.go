@@ -80,12 +80,10 @@ func printUsage() {
 	fmt.Printf(`
 bfkata - test scaffolding for Black Friday kata. Commands:
 
-
   api       - print bundled contracts
   specs     - print bundled test specs
   test      - run test suite aginst a provided gRPC endpoint
-
-`, os.Args[0])
+`)
 }
 
 const (
