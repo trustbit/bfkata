@@ -15,6 +15,7 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 	"log"
 	"os"
+	"regexp"
 	"strings"
 )
 
@@ -46,6 +47,8 @@ func main() {
 
 }
 
+var comment = regexp.MustCompile(`//.*`)
+
 func printApi() {
 	// poor man's keyword highlight
 	keywords := []string{"message",
@@ -53,8 +56,11 @@ func printApi() {
 	txt := api.BundledAPI
 	for _, kw := range keywords {
 		txt = strings.Replace(txt, kw+" ", GREEN+kw+CLEAR+" ", -1)
-
 	}
+
+	txt = comment.ReplaceAllStringFunc(txt, func(s string) string {
+		return YELLOW + s + CLEAR
+	})
 
 	fmt.Println(txt)
 }

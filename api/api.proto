@@ -1,6 +1,81 @@
 syntax = "proto3";
 package protos;
 option go_package = "bfkata/api";
+import "google/protobuf/any.proto";
+
+
+// This file defines the API (requests and responses) as well as public events
+// Implementations in different languages could use these to generate a codebase
+// in their favorite framework
+
+// rinat: pre-generate scaffolding in some langs and setup github templates?
+
+// we need to fix these contracts upfront, because spec tester and load tester
+// will use them to verify behaviors
+
+
+// 1. SPECIFICATION TEST INTERFACE -----------------
+// This is a special interface that your kata needs to expose in testing mode
+
+// Tester tool will call it with SpecRequest that has:
+// - given - list of events that describe the state
+// - when - request to be executed (wrapped with google.protobuf.Any)
+
+// The response will include:
+// - response - only if there is no error
+// - events - new events that were applied during the call
+// - status - response status code that matches google.rpc.Code
+// - error - logical error to help in debugging
+
+// spec tester checks only response, events and status. It doesn't test error
+
+message SpecRequest {
+  // a list of given events
+  repeated google.protobuf.Any given = 1;
+  // request that we are testing
+  google.protobuf.Any when = 2;
+}
+
+message SpecResponse {
+  // actual response. Must be nil on error
+  google.protobuf.Any response = 1;
+  // list of events that were produced by the aggregate
+  repeated google.protobuf.Any events = 2;
+  // status code maps to [google.rpc.Code][google.rpc.Code]
+  int32 status = 3;
+  // logical error in english
+  string error = 4;
+}
+
+message AboutRequest{ }
+message AboutResponse {
+  string author = 1;
+  string detail = 2;
+  string contact = 3;
+}
+
+service SpecService {
+  // Polite spec tester lets kata tell about it and its author
+  rpc About(AboutRequest) returns (AboutResponse);
+  // Spec subject will run this request in isolation
+  rpc Spec(SpecRequest) returns (SpecResponse);
+}
+
+
+// 2. INVENTORY INTERFACE!
+
+// here is the actual domain interface! Methods include:
+
+// AddLocations - can create entire warehouse in one go
+// AddProducts - can create multiple products at once
+// ListLocations - fetches a location tree, starting from some point
+// MoveLocation - moves location and everything it contains
+// UpdateInventory - method used to put things and remove things
+// GetLocInventory - grab aggregate inventory for a location
+// Reserve - place a reservation for some products at a location
+
+
+
 
 // locations are nested and could be bulk-added
 message AddLocationsReq {
@@ -45,9 +120,7 @@ message MoveLocationReq {
   int64 newParent = 2;
 }
 
-message MoveLocationResp {
-  // empty
-}
+message MoveLocationResp { }
 
 
 message AddProductsReq {
@@ -167,42 +240,4 @@ service InventoryService {
   rpc UpdateInventory(UpdateInventoryReq) returns (UpdateInventoryResp);
   rpc GetLocInventory(GetLocInventoryReq) returns (GetLocInventoryResp);
   rpc Reserve(ReserveReq) returns (ReserveResp);
-}
-
-
-// server need to implement this interface
-// to allow remote spec testing.
-// This is for collaboration with Christian Folie
-import "google/protobuf/any.proto";
-
-message SpecRequest {
-  // a list of given events
-  repeated google.protobuf.Any given = 1;
-  // request that we are testing
-  google.protobuf.Any when = 2;
-}
-
-message SpecResponse {
-  // actual response. Must be nil on error
-  google.protobuf.Any response = 1;
-  // list of events that were produced by the aggregate
-  repeated google.protobuf.Any events = 2;
-  // status code maps to [google.rpc.Code][google.rpc.Code]
-  int32 status = 3;
-  // logical error in english
-  string error = 4;
-}
-
-message AboutRequest{ }
-message AboutResponse {
-  string author = 1;
-  string detail = 2;
-  string contact = 3;
-}
-
-service SpecService {
-  // Spec subject will run this request in isolation
-  rpc Spec(SpecRequest) returns (SpecResponse);
-  // this serves two purposes - ping and info
-  rpc About(AboutRequest) returns (AboutResponse);
 }
