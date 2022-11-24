@@ -96,14 +96,14 @@ If you have go 1.19 installed on your system (install 1.19, it has generics!), t
 
 ```
 
-> go install github.com/trustbit/bfkata@v1.0.1
-go: downloading github.com/trustbit/bfkata v1.0.1
+> go install github.com/trustbit/bfkata@latest
+go: downloading github.com/trustbit/bfkata v1.0.2
 
 > bfkata  
 
 Loaded 29 specs from <bundled>
 Connecting to 127.0.0.1:50051...
-connection error: desc = "transport: Error while dialing dial tcp 127.0.0.1:50051: connect: connection refused"
+Connection refused
 
 Test endpoint is not found. Did you start it?
 ```
