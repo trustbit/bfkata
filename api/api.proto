@@ -3,10 +3,11 @@ package protos;
 option go_package = "bfkata/api";
 import "google/protobuf/any.proto";
 
+// This file defines the API that a kata needs to implement.
+// It uses Google Proto/RPC, so you should be able to generate concrete
+// types in your favorite language.
 
-// This file defines the API (requests and responses) as well as public events
-// Implementations in different languages could use these to generate a codebase
-// in their favorite framework
+// API covers: requests, responses, API definition and events.
 
 // rinat: pre-generate scaffolding in some langs and setup github templates?
 

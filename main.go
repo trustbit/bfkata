@@ -30,14 +30,12 @@ func main() {
 
 	switch os.Args[1] {
 	case "test":
-		runTest(os.Args[1:])
+		RunTest(os.Args[2:])
 	case "api":
-
 		printApi()
 		return
-
 	case "specs":
-		printSpecs()
+		printSpecs(os.Args[2:])
 	default:
 		fmt.Printf("Unknown command %s", os.Args[1])
 		printUsage()
@@ -65,18 +63,37 @@ func printApi() {
 	fmt.Println(txt)
 }
 
-func printSpecs() int {
+func printSpecs(args []string) int {
+
+	var compact bool
+	flags := flag.NewFlagSet("specs", flag.ExitOnError)
+
+	flags.BoolVar(&compact, "compact", false, "Display headers only")
+
+	if err := flags.Parse(args); err != nil {
+		flags.Usage()
+		return 1
+	}
+
 	sp, err := loadSpecs(BUNDLE)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	fmt.Printf("// Loaded %d specs from %s\n", len(sp), BUNDLE)
-	for _, s := range sp {
-		fmt.Println(specs.BODY_SEPARATOR)
-		fmt.Printf("%s%s %s(#%d)\n", GREEN, s.Name, CLEAR, s.Seq)
-		fmt.Println(specs.NAME_SEPARATOR)
-		specs.Print(s)
 
+	if compact {
+		for _, s := range sp {
+			fmt.Printf("%2d %s\n", s.Seq, s.Name)
+		}
+	} else {
+
+		fmt.Printf("// Loaded %d specs from %s\n", len(sp), BUNDLE)
+		for _, s := range sp {
+			fmt.Println(specs.BODY_SEPARATOR)
+			fmt.Printf("%s%s %s(#%d)\n", GREEN, s.Name, CLEAR, s.Seq)
+			fmt.Println(specs.NAME_SEPARATOR)
+			specs.Print(s)
+
+		}
 	}
 
 	return 0
@@ -135,33 +152,17 @@ func mustMsg(a *anypb.Any) proto.Message {
 	return p
 }
 
-func loadSpecs(file string) ([]*api.Spec, error) {
-	var reader *bytes.Reader
-	if file == BUNDLE {
-		reader = bytes.NewReader([]byte(specs.BundledSpecs))
+func RunTest(args []string) int {
 
-	} else {
-		in, err := os.ReadFile(file)
-		if err != nil {
-			return nil, fmt.Errorf("can't read file: %w", err)
-		}
-		reader = bytes.NewReader(in)
-	}
-	actual, err := specs.ReadSpecs(reader)
-	if err != nil {
-		return nil, fmt.Errorf("can't parse specs:", err)
-	}
-	return actual, nil
-
-}
-
-func runTest(args []string) int {
+	fmt.Println(args)
 	var addr string
 	var file string
+	var specNum int
 	flags := flag.NewFlagSet("test", flag.ExitOnError)
 
 	flags.StringVar(&addr, "addr", "127.0.0.1:50051", "Subject to test")
 	flags.StringVar(&file, "file", BUNDLE, "Specs file to load")
+	flags.IntVar(&specNum, "spec", 0, "Spec id to explore")
 
 	if err := flags.Parse(args); err != nil {
 		flags.Usage()
@@ -172,6 +173,10 @@ func runTest(args []string) int {
 	if err != nil {
 		fmt.Println(err.Error())
 		return 1
+	}
+
+	if specNum > 0 {
+		actual = actual[specNum : specNum+1]
 	}
 
 	fmt.Printf("Loaded %d specs from %s\n", len(actual), file)
@@ -251,4 +256,24 @@ func runTest(args []string) int {
 	}
 	fmt.Printf("Pass:%d Fail:%d Deltas:%d\n", oks, fails, issues)
 	return 0
+}
+
+func loadSpecs(file string) ([]*api.Spec, error) {
+	var reader *bytes.Reader
+	if file == BUNDLE {
+		reader = bytes.NewReader([]byte(specs.BundledSpecs))
+
+	} else {
+		in, err := os.ReadFile(file)
+		if err != nil {
+			return nil, fmt.Errorf("can't read file: %w", err)
+		}
+		reader = bytes.NewReader(in)
+	}
+	actual, err := specs.ReadSpecs(reader)
+	if err != nil {
+		return nil, fmt.Errorf("can't parse specs:", err)
+	}
+	return actual, nil
+
 }
