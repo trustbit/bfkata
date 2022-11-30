@@ -3,47 +3,51 @@
 
 Status: stabilizing the domain internally at Trustbit. Not for public use, yet.
 
-This is a scaffolding for DDD and Event Sourcing kata from Trustbit.
+## Short Story
 
-The idea is to implement backend for a minimal inventory management system. 
-It has to be a separate application that is written in a language of your choice. You are free
-to pick database engine and internal design that fits you.
+This is a scaffolding for **DDD and Event Sourcing Kata** from Trustbit. It is about inventory management.
 
-API definitions and event contracts are pre-defined in gRPC/Protobuf. So you can easily
-generate scaffolding and contracts in your language.
+1. Grab protobuf [protobuf definition](api/api.proto) for a small inventory-management server.
+2. Generate events and API from that definition for your language
+3. Install bfkata binary (either as binary or by running go code from this repo)
+4. Run `bfkata test` to verify that behaviors are implemented correctly
+5. (Future) Run `bfkata stress` to see how code performs under high load
 
-The only things that are fixed and shared by everybody:
-
-- API methods (they are defined in gRPC spec)
-- Event contracts
-- 
+![](doc/picture.png)
 
 
-We provide:
+## Long Story
 
-- API and Event definition in gRPC;
-- event-driven spec tests that define behaviors;
-- platform-independent test runner.
+At Trustbit, we want to make it easy to do a domain-modeling kata with event sourcing in a language of your choice. This is good for learning, sharing, and pushing the state of the art. If you are interested, **please follow along**!
 
+We have picked inventory-management domain, because it brings some interesting behaviors and fault scenarios.
 
-## API Definitions
+To streamline kata, we took the liberty of:
 
-API and Event definitions are available in [api/api.proto](api/api.proto).
+- Defining the API - it is as minimal as possible
+- Defining event contracts
+- Writing them down in Google proto3 syntax - so that you can scaffold implementation in a language of your choice
+- Writing event-driven specs (tests)
+- Bundling these specs in a cross-platform spec runner
+
+In other worlds:
+- [api/api.proto](api/api.proto) - defines contracts for API and events;
+- [specs/bundle.txt](specs/bundle.txt) - contains tests that define desired behaviors;
+- bfkata binary (this project) - tests any implementation.
+
+This kata is solvable without much code. We went ahead and did it ourselves, as a part of Learning & Sharing at Trustbit.
+
+If you want to play with a slighly different API or behaviors, you could easily do so by forking the project and changing API/specs according to your needs.
+
+## Inventory vs Spec APIs
 
 There are two sets of APIs  implement:
 
-- Inventory service - the real service.
-- Spec service - service that allows to test individual specs.
+- Inventory service - the real service with methods like "add location" and "reserve (inventory)"
+- Spec service - special service to run specs remotely.
 
 
-
-You need to implement two different APIs
-
-
-
-[api/api.proto](api/api.proto)
-
-## Inventory API
+### 1. Inventory API
 
 Inventory API is as simple as we could get it. It has methods:
 
@@ -63,7 +67,14 @@ There are following domain events:
 - InventoryUpdated
 - Reserved
 
-You can find full definition in .
+You can find full definition in [api/api.proto](api/api.proto).
+
+### 2. Spec API
+
+This API has two methods:
+
+- About - to return info about the implementation
+- Spec - to execute a single event-driven spec against this endpoint. `bfkata` will use it to verify all behaviors.
 
 
 ## Event-Driven Specs
@@ -86,25 +97,48 @@ EVENTS:
 
 They are bundled as text file in [specs/bundle.txt](specs/bundle.txt).
 
-This repository includes a test runner that can run specs against gRPC implementation.
+If you want to play with your own specs, just copy `bundle.txt` someplace, modify and pass to `bfkata test` as `file` argument.
 
-## Spec API
+# Running bfkata
 
-## Test Runner
+To run bfkata.
+
+
+## With go 1.19 as package
 
 If you have go 1.19 installed on your system (install 1.19, it has generics!), then:
 
+```bash
+
+go install github.com/trustbit/bfkata@latest
+
+# prints:
+# go: downloading github.com/trustbit/bfkata v1.0.5
+
+bfkata  
+
+# bfkata - test scaffolding for Black Friday kata. Commands:
+#
+#  api       - print bundled contracts
+#  specs     - print bundled test specs
+#  test      - run test suite aginst a provided gRPC endpoint
 ```
 
-> go install github.com/trustbit/bfkata@latest
-go: downloading github.com/trustbit/bfkata v1.0.2
+## From source code
 
-> bfkata  
+Clone this repository then run:
 
-Loaded 29 specs from <bundled>
-Connecting to 127.0.0.1:50051...
-Connection refused
+```bash
+go run *.go
 
-Test endpoint is not found. Did you start it?
+# bfkata - test scaffolding for Black Friday kata. Commands:
+#
+#  api       - print bundled contracts
+#  specs     - print bundled test specs
+#  test      - run test suite aginst a provided gRPC endpoint
 ```
 
+
+## From binary
+
+not implemented yet. Ping Rinat (@abdullin on Twitter) to setup proper releases :)
