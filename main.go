@@ -153,16 +153,16 @@ func mustMsg(a *anypb.Any) proto.Message {
 }
 
 func RunTest(args []string) int {
-
-	fmt.Println(args)
 	var addr string
 	var file string
 	var specNum int
+	var limit int
 	flags := flag.NewFlagSet("test", flag.ExitOnError)
 
 	flags.StringVar(&addr, "addr", "127.0.0.1:50051", "Subject to test")
 	flags.StringVar(&file, "file", BUNDLE, "Specs file to load")
 	flags.IntVar(&specNum, "spec", 0, "Spec id to explore")
+	flags.IntVar(&limit, "limit", 3, "Max failures to show (-1 to limit)")
 
 	if err := flags.Parse(args); err != nil {
 		flags.Usage()
@@ -214,7 +214,9 @@ func RunTest(args []string) int {
 		fmt.Println(err.Error())
 		return 1
 	} else {
-		fmt.Printf("OK! Implemented by %s\n", resp.Author)
+		fmt.Printf("OK! Kata implemented by %s%s%s (%s)\n\n",
+			YELLOW,
+			resp.Author, CLEAR, resp.Detail)
 	}
 
 	for i, s := range actual {
@@ -248,13 +250,27 @@ func RunTest(args []string) int {
 		if len(deltas) == 0 && err == nil {
 			oks += 1
 		} else {
+
+			if limit != -1 {
+				if fails < limit {
+					specs.PrintFull(s, deltas)
+					println()
+				}
+
+			}
+
 			fails += 1
-			specs.PrintFull(s, deltas)
-			println()
 		}
 
 	}
-	fmt.Printf("Pass:%d Fail:%d Deltas:%d\n", oks, fails, issues)
+
+	if fails > limit {
+		fmt.Printf("%s%d failing spec(s) hidden.%s Use 'limit' flag to show more\n", RED, limit, CLEAR)
+	}
+
+	fmt.Printf("%sPass:%d%s %sFail:%d%s Deltas:%d\n",
+		GREEN, oks, CLEAR,
+		RED, fails, CLEAR, issues)
 	return 0
 }
 
