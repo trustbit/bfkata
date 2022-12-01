@@ -298,7 +298,7 @@ WHEN:
 THEN:
   ReserveResp reservation:1
 EVENTS:
-  Reserved reservation:1  code:"sale"  items:{product:1  quantity:10}
+  Reserved reservation:1  code:"sale"  items:{product:1  quantity:10 location:1}
 
 ==========================================
 reserve non-existent sku
