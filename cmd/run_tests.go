@@ -58,7 +58,16 @@ func RunTests(args []string) int {
 	}
 
 	if specNum > 0 {
-		actual = actual[specNum : specNum+1]
+		// TODO: implement multi-spec filter
+		var matching []*api.Spec
+		for _, s := range actual {
+			if s.Seq == specNum {
+				matching = append(matching, s)
+			}
+		}
+
+		actual = matching
+
 	}
 
 	fmt.Printf("Loaded %d specs from %s\n", len(actual), file)
