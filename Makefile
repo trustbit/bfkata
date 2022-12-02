@@ -1,7 +1,7 @@
 .PHONY: clean schema
 
 build:
-	@go build -buildmode=pie -o bin/bf main.go
+	@go build -buildmode=pie -o bin/bfkata main.go
 
 build-m1:
 	@GOOS=darwin GOARCH=arm64 go build -o bin/bf-macos-arm64 main.go
