@@ -6,10 +6,15 @@ import (
 	"os"
 )
 
+var (
+	Version   string
+	GitCommit string
+)
+
 func main() {
 
 	if len(os.Args) == 1 {
-		cmd.PrintUsage()
+		cmd.PrintUsage(Version, GitCommit)
 		return
 	}
 
@@ -23,7 +28,7 @@ func main() {
 		code = cmd.PrintSpecs(os.Args[2:])
 	default:
 		fmt.Printf("Unknown command %s\n", os.Args[1])
-		cmd.PrintUsage()
+		cmd.PrintUsage(Version, GitCommit)
 		code = 1
 	}
 
