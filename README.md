@@ -9,7 +9,7 @@ This is a scaffolding for **DDD and Event Sourcing Kata** from Trustbit. It is a
 
 1. Grab protobuf [protobuf definition](api/api.proto) for a small inventory-management server.
 2. Generate events and API from that definition for your language
-3. Install bfkata binary (either as binary or by running go code from this repo)
+3. Install bfkata binary from [releases](https://github.com/trustbit/bfkata/releases) (or run go code from this repo)
 4. Run `bfkata test` to verify that behaviors are implemented correctly
 5. (Future) Run `bfkata stress` to see how code performs under high load
 
@@ -101,8 +101,7 @@ If you want to play with your own specs, just copy `bundle.txt` someplace, modif
 
 # Running bfkata
 
-To run bfkata.
-
+The easiest way to run bfkata is by downloading the latest release for your platform from [Releases](https://github.com/trustbit/bfkata/releases)
 
 ## With go 1.19 as package
 
