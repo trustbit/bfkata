@@ -271,6 +271,10 @@ func RunTest(args []string) int {
 	fmt.Printf("%sPass:%d%s %sFail:%d%s Deltas:%d\n",
 		GREEN, oks, CLEAR,
 		RED, fails, CLEAR, issues)
+
+	if fails > 0 {
+		return 1
+	}
 	return 0
 }
 
