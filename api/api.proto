@@ -1,7 +1,7 @@
 syntax = "proto3";
 package protos;
 option go_package = "bfkata/api";
-import "google/protobuf/any.proto";
+;
 
 // This file defines the API that a kata needs to implement.
 // It uses Google Proto/RPC, so you should be able to generate concrete
@@ -206,16 +206,6 @@ message ReserveReq {
 
 message ReserveResp {
   int64 reservation = 1;
-}
-
-enum Lambda{
-  UNSPECIFIED = 0;
-  RESERVE = 1;
-}
-
-message LambdaInstalled{
-  Lambda type = 1;
-  string code = 2;
 }
 
 message Reserved {
