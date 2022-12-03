@@ -8,8 +8,8 @@ Status: stabilizing the domain internally at Trustbit. Not for public use, yet.
 This is a scaffolding for **DDD and Event Sourcing Kata** from Trustbit. It is about inventory management.
 
 1. Grab protobuf [protobuf definition](api/api.proto) for a small inventory-management server.
-2. Generate events and API from that definition for your language. Implement your first method
-3. Install bfkata binary from [releases](https://github.com/trustbit/bfkata/releases) (or run go code from this repo)
+2. Generate events and API from that definition for your language. Implement your first method.
+3. Install bfkata binary for your platform from [releases](https://github.com/trustbit/bfkata/releases) (or run go code from this repo)
 4. Run `bfkata test` to verify that [behaviors](specs/bundle.txt) are implemented correctly
 5. (Future) Run `bfkata stress` to see how code performs under high load
 
