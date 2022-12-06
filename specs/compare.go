@@ -11,7 +11,7 @@ import (
 
 func Compare(spec *api.Spec, resp proto.Message, actualErr *status.Status, events []proto.Message) seq.Issues {
 
-	issues := seq.Diff(spec.ThenResponse, resp, "response")
+	issues := seq.Diff(spec.ThenResponse, resp, seq.NewPath("Response"))
 
 	expectedStatus := codes.OK
 	if spec.ThenError != nil {
@@ -27,7 +27,7 @@ func Compare(spec *api.Spec, resp proto.Message, actualErr *status.Status, event
 		issues = append(issues, seq.Issue{
 			Expected: expectedStatus,
 			Actual:   actualStatus,
-			Path:     []string{"status"},
+			Path:     seq.NewPath("Status"),
 		})
 
 	}
@@ -36,12 +36,12 @@ func Compare(spec *api.Spec, resp proto.Message, actualErr *status.Status, event
 		issues = append(issues, seq.Issue{
 			Expected: spec.ThenEvents,
 			Actual:   events,
-			Path:     []string{"Events"},
+			Path:     seq.NewPath("Events"),
 		})
 	} else {
 		for i, e := range spec.ThenEvents {
-			p := []string{"Events", fmt.Sprintf("[%d]", i)}
-			issues = append(issues, seq.Diff(e, events[i], p...)...)
+			p := seq.NewPath("Events", fmt.Sprintf("[%d]", i))
+			issues = append(issues, seq.Diff(e, events[i], p)...)
 		}
 	}
 	return issues

@@ -19,6 +19,7 @@ dist:
 	GOOS=windows CGO_ENABLED=0 go build -a -ldflags $(LDFLAGS) -installsuffix cgo -o bin/$(BINARY).exe
 
 
+
 .PHONY: all
 all: gofmt dist
 
