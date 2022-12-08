@@ -155,6 +155,7 @@ type InventoryServiceClient interface {
 	UpdateInventory(ctx context.Context, in *UpdateInventoryReq, opts ...grpc.CallOption) (*UpdateInventoryResp, error)
 	GetLocInventory(ctx context.Context, in *GetLocInventoryReq, opts ...grpc.CallOption) (*GetLocInventoryResp, error)
 	Reserve(ctx context.Context, in *ReserveReq, opts ...grpc.CallOption) (*ReserveResp, error)
+	Fulfill(ctx context.Context, in *FulfillReq, opts ...grpc.CallOption) (*FulfillResp, error)
 }
 
 type inventoryServiceClient struct {
@@ -228,6 +229,15 @@ func (c *inventoryServiceClient) Reserve(ctx context.Context, in *ReserveReq, op
 	return out, nil
 }
 
+func (c *inventoryServiceClient) Fulfill(ctx context.Context, in *FulfillReq, opts ...grpc.CallOption) (*FulfillResp, error) {
+	out := new(FulfillResp)
+	err := c.cc.Invoke(ctx, "/protos.InventoryService/Fulfill", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // InventoryServiceServer is the server API for InventoryService service.
 // All implementations must embed UnimplementedInventoryServiceServer
 // for forward compatibility
@@ -239,6 +249,7 @@ type InventoryServiceServer interface {
 	UpdateInventory(context.Context, *UpdateInventoryReq) (*UpdateInventoryResp, error)
 	GetLocInventory(context.Context, *GetLocInventoryReq) (*GetLocInventoryResp, error)
 	Reserve(context.Context, *ReserveReq) (*ReserveResp, error)
+	Fulfill(context.Context, *FulfillReq) (*FulfillResp, error)
 	mustEmbedUnimplementedInventoryServiceServer()
 }
 
@@ -266,6 +277,9 @@ func (UnimplementedInventoryServiceServer) GetLocInventory(context.Context, *Get
 }
 func (UnimplementedInventoryServiceServer) Reserve(context.Context, *ReserveReq) (*ReserveResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Reserve not implemented")
+}
+func (UnimplementedInventoryServiceServer) Fulfill(context.Context, *FulfillReq) (*FulfillResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Fulfill not implemented")
 }
 func (UnimplementedInventoryServiceServer) mustEmbedUnimplementedInventoryServiceServer() {}
 
@@ -406,6 +420,24 @@ func _InventoryService_Reserve_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _InventoryService_Fulfill_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FulfillReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InventoryServiceServer).Fulfill(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/protos.InventoryService/Fulfill",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InventoryServiceServer).Fulfill(ctx, req.(*FulfillReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // InventoryService_ServiceDesc is the grpc.ServiceDesc for InventoryService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -440,6 +472,10 @@ var InventoryService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Reserve",
 			Handler:    _InventoryService_Reserve_Handler,
+		},
+		{
+			MethodName: "Fulfill",
+			Handler:    _InventoryService_Fulfill_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -217,11 +217,45 @@ message Reserved {
   message Item {
     string product = 1;
     int64 quantity = 2;
-
     string location = 3;
   }
 
   repeated Item items = 4;
+}
+
+message FulfillReq{
+  string reservation = 1;
+
+  message Item {
+    string product = 1;
+    string location = 2;
+    int64 quantity = 3;
+  }
+  repeated Item items = 2;
+}
+
+message FulfillResp {}
+
+message Fulfilled {
+  string reservation = 1;
+
+  message Item {
+    string product = 1;
+    string location = 2;
+    int64 removed = 3;
+    int64 onHand = 4;
+  }
+  repeated Item items = 2;
+}
+
+message Cancelled {
+  string reservation = 1;
+  message Item {
+    string product = 1;
+    string location = 2;
+    int64 released = 3;
+  }
+  repeated Item items = 2;
 }
 
 
@@ -233,4 +267,5 @@ service InventoryService {
   rpc UpdateInventory(UpdateInventoryReq) returns (UpdateInventoryResp);
   rpc GetLocInventory(GetLocInventoryReq) returns (GetLocInventoryResp);
   rpc Reserve(ReserveReq) returns (ReserveResp);
+  rpc Fulfill(FulfillReq) returns (FulfillResp);
 }
