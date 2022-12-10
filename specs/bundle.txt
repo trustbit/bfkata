@@ -512,6 +512,17 @@ ERROR:
   NotFound: product not found
 
 ==========================================
+reserve product without inventory
+------------------------------------------
+GIVEN:
+  ProductAdded uid:"00000000-0000-0000-0000-000000000001" sku:"cola"
+  LocationAdded uid:"00000000-0000-0000-0000-000000000002" name:"WHS1"
+WHEN:
+  ReserveReq reservation:"test" items:{sku:"cola" quantity:1}
+ERROR:
+  FailedPrecondition: not enough quantity
+
+==========================================
 reserve when onHand isn't enough
 ------------------------------------------
 GIVEN:
@@ -602,6 +613,21 @@ WHEN:
   FulfillReq reservation:"00000000-0000-0000-0000-000000000001"
 ERROR:
   NotFound: reservation not found
+
+==========================================
+simple fulfillment
+------------------------------------------
+GIVEN:
+  ProductAdded uid:"00000000-0000-0000-0000-000000000001" sku:"GPU"
+  LocationAdded uid:"00000000-0000-0000-0000-000000000002" name:"Warehouse"
+  InventoryUpdated location:"00000000-0000-0000-0000-000000000002" product:"00000000-0000-0000-0000-000000000001" OnHandChange:10 OnHand:10
+  Reserved reservation:"00000000-0000-0000-0000-000000000003" code:"sale" items:{product:"00000000-0000-0000-0000-000000000001" quantity:7 location:"00000000-0000-0000-0000-000000000002"}
+WHEN:
+  FulfillReq reservation:"00000000-0000-0000-0000-000000000003" items:{product:"00000000-0000-0000-0000-000000000001" location:"00000000-0000-0000-0000-000000000002" quantity:7}
+THEN:
+  FulfillResp
+EVENTS:
+  Fulfilled reservation:"00000000-0000-0000-0000-000000000003" items:{product:"00000000-0000-0000-0000-000000000001" location:"00000000-0000-0000-0000-000000000002" removed:7 onHand:3}
 
 ==========================================
 fulfill reservation in a shipment box
