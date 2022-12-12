@@ -463,6 +463,20 @@ EVENTS:
   Reserved reservation:"00000000-0000-0000-0000-000000000003" code:"sale" items:{product:"00000000-0000-0000-0000-000000000001" quantity:10 location:"00000000-0000-0000-0000-000000000000"}
 
 ==========================================
+reservation with repeating product
+------------------------------------------
+GIVEN:
+  ProductAdded uid:"00000000-0000-0000-0000-000000000001" sku:"GPU"
+  LocationAdded uid:"00000000-0000-0000-0000-000000000002" name:"Shelf"
+  InventoryUpdated location:"00000000-0000-0000-0000-000000000002" product:"00000000-0000-0000-0000-000000000001" OnHandChange:10 OnHand:10
+WHEN:
+  ReserveReq reservation:"sale" items:{sku:"GPU" quantity:7} items:{sku:"GPU" quantity:3} location:"00000000-0000-0000-0000-000000000000"
+THEN:
+  ReserveResp reservation:"00000000-0000-0000-0000-000000000003"
+EVENTS:
+  Reserved reservation:"00000000-0000-0000-0000-000000000003" code:"sale" items:{product:"00000000-0000-0000-0000-000000000001" quantity:10 location:"00000000-0000-0000-0000-000000000000"}
+
+==========================================
 reserve sale in a specific location
 ------------------------------------------
 GIVEN:
