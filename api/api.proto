@@ -35,6 +35,8 @@ message SpecRequest {
   repeated google.protobuf.Any given = 1;
   // request that we are testing
   google.protobuf.Any when = 2;
+  // Next sequential UID to use for logic in test mode
+  string NextUid = 3;
 }
 
 message SpecResponse {

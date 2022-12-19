@@ -122,6 +122,8 @@ func RunTests(args []string) int {
 			request.Given = append(request.Given, mustAny(e))
 		}
 
+		request.NextUid = nextSeq(s.Given)
+
 		resp, err := client.Spec(ctx, request)
 
 		if err != nil {

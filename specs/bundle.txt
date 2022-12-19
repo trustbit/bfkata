@@ -245,10 +245,10 @@ query inventory at a specific location
 GIVEN:
   ProductAdded uid:"00000000-0000-0000-0000-000000000001"  sku:"Cola"
   ProductAdded uid:"00000000-0000-0000-0000-000000000002"  sku:"Fanta"
-  LocationAdded uid:"00000000-0000-0000-0000-000000000001"  name:"Shelf"  parent:"00000000-0000-0000-0000-000000000000"
-  InventoryUpdated location:"00000000-0000-0000-0000-000000000001"  product:"00000000-0000-0000-0000-000000000002"  OnHandChange:2  OnHand:2
+  LocationAdded uid:"00000000-0000-0000-0000-000000000003"  name:"Shelf"  parent:"00000000-0000-0000-0000-000000000000"
+  InventoryUpdated location:"00000000-0000-0000-0000-000000000003"  product:"00000000-0000-0000-0000-000000000002"  OnHandChange:2  OnHand:2
 WHEN:
-  GetLocInventoryReq location:"00000000-0000-0000-0000-000000000001"
+  GetLocInventoryReq location:"00000000-0000-0000-0000-000000000003"
 THEN:
   GetLocInventoryResp items:{Product:"00000000-0000-0000-0000-000000000002"  OnHand:2  Available:2}
 
@@ -256,29 +256,29 @@ THEN:
 two boxes sum up their quantity at root
 ------------------------------------------
 GIVEN:
-  ProductAdded uid:"00000000-0000-0000-0000-000000000001"  sku:"Epyc"
   LocationAdded uid:"00000000-0000-0000-0000-000000000001"  name:"Shelf1"  parent:"00000000-0000-0000-0000-000000000000"
   LocationAdded uid:"00000000-0000-0000-0000-000000000002"  name:"Shelf2"  parent:"00000000-0000-0000-0000-000000000000"
-  InventoryUpdated location:"00000000-0000-0000-0000-000000000001"  product:"00000000-0000-0000-0000-000000000001"  OnHandChange:2  OnHand:2
-  InventoryUpdated location:"00000000-0000-0000-0000-000000000002"  product:"00000000-0000-0000-0000-000000000001"  OnHandChange:3  OnHand:3
+  ProductAdded uid:"00000000-0000-0000-0000-000000000003"  sku:"Epyc"
+  InventoryUpdated location:"00000000-0000-0000-0000-000000000001"  product:"00000000-0000-0000-0000-000000000003"  OnHandChange:2  OnHand:2
+  InventoryUpdated location:"00000000-0000-0000-0000-000000000002"  product:"00000000-0000-0000-0000-000000000003"  OnHandChange:3  OnHand:3
 WHEN:
   GetLocInventoryReq location:"00000000-0000-0000-0000-000000000000"
 THEN:
-  GetLocInventoryResp items:{Product:"00000000-0000-0000-0000-000000000001"  OnHand:5  Available:5}
+  GetLocInventoryResp items:{Product:"00000000-0000-0000-0000-000000000003"  OnHand:5  Available:5}
 
 ==========================================
 boxes sums up quantity with parent container
 ------------------------------------------
 GIVEN:
-  ProductAdded uid:"00000000-0000-0000-0000-000000000001"  sku:"Epyc"
   LocationAdded uid:"00000000-0000-0000-0000-000000000001"  name:"Shelf"  parent:"00000000-0000-0000-0000-000000000000"
   LocationAdded uid:"00000000-0000-0000-0000-000000000002"  name:"Bin"  parent:"00000000-0000-0000-0000-000000000001"
-  InventoryUpdated location:"00000000-0000-0000-0000-000000000001"  product:"00000000-0000-0000-0000-000000000001"  OnHandChange:2  OnHand:2
-  InventoryUpdated location:"00000000-0000-0000-0000-000000000002"  product:"00000000-0000-0000-0000-000000000001"  OnHandChange:3  OnHand:3
+  ProductAdded uid:"00000000-0000-0000-0000-000000000003"  sku:"Epyc"
+  InventoryUpdated location:"00000000-0000-0000-0000-000000000001"  product:"00000000-0000-0000-0000-000000000003"  OnHandChange:2  OnHand:2
+  InventoryUpdated location:"00000000-0000-0000-0000-000000000002"  product:"00000000-0000-0000-0000-000000000003"  OnHandChange:3  OnHand:3
 WHEN:
   GetLocInventoryReq location:"00000000-0000-0000-0000-000000000001"
 THEN:
-  GetLocInventoryResp items:{Product:"00000000-0000-0000-0000-000000000001"  OnHand:5  Available:5}
+  GetLocInventoryResp items:{Product:"00000000-0000-0000-0000-000000000003"  OnHand:5  Available:5}
 
 ==========================================
 query inventory at root
@@ -286,8 +286,8 @@ query inventory at root
 GIVEN:
   ProductAdded uid:"00000000-0000-0000-0000-000000000001"  sku:"Cola"
   ProductAdded uid:"00000000-0000-0000-0000-000000000002"  sku:"Fanta"
-  LocationAdded uid:"00000000-0000-0000-0000-000000000001"  name:"Shelf"  parent:"00000000-0000-0000-0000-000000000000"
-  InventoryUpdated location:"00000000-0000-0000-0000-000000000001"  product:"00000000-0000-0000-0000-000000000002"  OnHandChange:2  OnHand:2
+  LocationAdded uid:"00000000-0000-0000-0000-000000000003"  name:"Shelf"  parent:"00000000-0000-0000-0000-000000000000"
+  InventoryUpdated location:"00000000-0000-0000-0000-000000000003"  product:"00000000-0000-0000-0000-000000000002"  OnHandChange:2  OnHand:2
 WHEN:
   GetLocInventoryReq location:"00000000-0000-0000-0000-000000000000"
 THEN:
