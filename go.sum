@@ -4,6 +4,8 @@ github.com/abdullin/go-seq v1.0.1 h1:Uh6iT7XupvSzgvOVY1dIv3d7tTACvEeaj6O2Slz8pvU
 github.com/abdullin/go-seq v1.0.1/go.mod h1:4yO2uZUKzV/HnMkRQqmQHxDr/BQPczf9rGKpRLgB5QY=
 github.com/abdullin/go-seq v1.0.6 h1:50jVDywPg3A0zuFGFRLI4MSoq6AgA3GvuiFHBPeGmmo=
 github.com/abdullin/go-seq v1.0.6/go.mod h1:4yO2uZUKzV/HnMkRQqmQHxDr/BQPczf9rGKpRLgB5QY=
+github.com/abdullin/go-seq v1.0.7 h1:jAMOg5Nmrl99rUPsyZiXa2DOHW9PsFpJe9ZDLK14iz8=
+github.com/abdullin/go-seq v1.0.7/go.mod h1:4yO2uZUKzV/HnMkRQqmQHxDr/BQPczf9rGKpRLgB5QY=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
