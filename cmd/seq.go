@@ -25,9 +25,9 @@ func nextSeq(msgs []proto.Message) string {
 
 	inc := func(s string) {
 		parsed := seqToInt(s)
-		//if parsed != id+1 {
-		//	log.Panicln("Seq is not incrementing")
-		//}
+		if parsed != id+1 {
+			log.Panicln("Seq is not incrementing")
+		}
 		if parsed > id {
 			id = parsed
 		}
